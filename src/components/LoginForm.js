@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Container, Grid, Typography, TextField, Button } from '@mui/material';
+import { ERROR_MESSAGES, VALIDATION_RULES, ROUTES } from './constants';
 
 const LoginForm = () => {
   const [username, setUsername] = useState('');
@@ -20,14 +21,13 @@ const LoginForm = () => {
     let errors = {};
 
     if (!username) {
-      errors.username = 'Username is required';
+      errors.username = ERROR_MESSAGES.username;
     }
 
     if (!password) {
-      errors.password = 'Password is required';
-    } else if (!/(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/.test(password)) {
-      errors.password =
-        'Password must contain at least one number, one uppercase and lowercase letter, and at least 8 characters';
+      errors.password = ERROR_MESSAGES.password;
+    } else if (!VALIDATION_RULES.password.test(password)) {
+      errors.password = ERROR_MESSAGES.passwordValidation;
     }
 
     setErrors(errors);
@@ -41,14 +41,14 @@ const LoginForm = () => {
 
     if (storedPassword === password) {
       console.log('Login successful!');
-      navigate('/dashboard');
+      navigate(ROUTES.dashboard);
     } else {
-      window.alert('Incorrect email or password');
-      console.log('Incorrect email or password');
+      window.alert('Incorrect username or password');
+      console.log('Incorrect username or password');
     }
 
     if (validate()) {
-      navigate.push('/dashboard');
+      navigate(ROUTES.profile);
     }
   };
 
@@ -81,7 +81,6 @@ const LoginForm = () => {
               onChange={handlePasswordChange}
               error={!!errors.password}
               helperText={errors.password}
-              
             />
           </Grid>
 
@@ -93,10 +92,10 @@ const LoginForm = () => {
         </Grid>
       </form>
       <Typography variant="body1" align="center">
-        Don't have an account? <Link to="/register">Create account</Link>
+        Don't have an account? <Link to={ROUTES.register}>Create account</Link>
       </Typography>
       <Typography align="center">
-        <Link to="/forgotpassword" color="primary">
+        <Link to={ROUTES.resetPassword} color="primary">
           Forgot password?
         </Link>
       </Typography>

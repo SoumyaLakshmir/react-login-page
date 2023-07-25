@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {Container,Grid,Typography,TextField,Button,MenuItem,Select,InputLabel} from '@mui/material';
+import { Container, Grid, Typography, TextField, Button, MenuItem, Select, InputLabel } from '@mui/material';
+import { ERROR_MESSAGES, VALIDATION_RULES, ROUTES } from './constants';
 
 const CreateAccountPage = () => {
   const [firstName, setFirstName] = useState('');
@@ -15,6 +16,7 @@ const CreateAccountPage = () => {
   const handleFirstNameChange = (event) => {
     setFirstName(event.target.value);
   };
+
   const handleLastNameChange = (event) => {
     setLastName(event.target.value);
   };
@@ -26,10 +28,12 @@ const CreateAccountPage = () => {
   const handlePhoneNumberChange = (event) => {
     setPhoneNumber(event.target.value);
   };
-  const handleage = (event) => {
+
+  const handleAgeChange = (event) => {
     setAge(event.target.value);
   };
-  const handlegender = (event) => {
+
+  const handleGenderChange = (event) => {
     setGender(event.target.value);
   };
 
@@ -37,27 +41,29 @@ const CreateAccountPage = () => {
     let errors = {};
 
     if (!firstName) {
-      errors.firstName = 'First name is required';
+      errors.firstName = ERROR_MESSAGES.firstName;
     }
+
     if (!lastName) {
-      errors.lastName = 'Last name is required';
+      errors.lastName = ERROR_MESSAGES.lastName;
     }
 
     if (!email) {
-      errors.email = 'Email is required';
+      errors.email = ERROR_MESSAGES.email;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errors.email = 'Invalid email address';
+      errors.email = ERROR_MESSAGES.invalidEmail;
     }
 
     if (!phoneNumber) {
-      errors.phoneNumber = 'Phone number is required';
-    } else if (!/^\d{10}$/.test(phoneNumber)) {
-      errors.phoneNumber = 'Invalid phone number';
+      errors.phoneNumber = ERROR_MESSAGES.phoneNumber;
+    } else if (!VALIDATION_RULES.phoneNumber.test(phoneNumber)) {
+      errors.phoneNumber = ERROR_MESSAGES.invalidPhoneNumber;
     }
+
     if (!age) {
-      errors.age = 'Age is required';
+      errors.age = ERROR_MESSAGES.age;
     }
-    
+
     setErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -65,11 +71,11 @@ const CreateAccountPage = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (validate()) {
-      navigate("/setpassword")
-
-      navigate.push('/login');
+      navigate(ROUTES.setpassword);
     }
   };
+
+  const isDisabled = !firstName || !lastName || !email || !phoneNumber || !age || !gender;
 
   return (
     <Container maxWidth="sm">
@@ -79,54 +85,85 @@ const CreateAccountPage = () => {
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField fullWidth label="First name" value={firstName} onChange={handleFirstNameChange} 
-            error={!!errors.firstName} helperText={errors.firstName}/>
+            <TextField
+              fullWidth
+              label="First name"
+              value={firstName}
+              onChange={handleFirstNameChange}
+              error={!!errors.firstName}
+              helperText={errors.firstName}
+            />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField fullWidth label="Last name" value={lastName} onChange={handleLastNameChange}
-              error={!!errors.lastName} helperText={errors.lastName} />
+            <TextField
+              fullWidth
+              label="Last name"
+              value={lastName}
+              onChange={handleLastNameChange}
+              error={!!errors.lastName}
+              helperText={errors.lastName}
+            />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField fullWidth label="Email" value={email} onChange={handleEmailChange}
-              error={!!errors.email} helperText={errors.email} />
+            <TextField
+              fullWidth
+              label="Email"
+              value={email}
+              onChange={handleEmailChange}
+              error={!!errors.email}
+              helperText={errors.email}
+            />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField fullWidth label="Phone number" value={phoneNumber} onChange={handlePhoneNumberChange}
-              error={!!errors.phoneNumber} helperText={errors.phoneNumber} />
+            <TextField
+              fullWidth
+              label="Phone number"
+              value={phoneNumber}
+              onChange={handlePhoneNumberChange}
+              error={!!errors.phoneNumber}
+              helperText={errors.phoneNumber}
+            />
           </Grid>
 
           <Grid item xs={12}>
-            <TextField fullWidth label="Age" value={age} type="number" onChange={handleage}
-              error={!!errors.age} helperText={errors.age} />
+            <TextField
+              fullWidth
+              label="Age"
+              value={age}
+              type="number"
+              onChange={handleAgeChange}
+              error={!!errors.age}
+              helperText={errors.age}
+            />
           </Grid>
 
           <Grid item xs={12}>
-          <InputLabel id="gender-label"  label="Gender" value={gender} onChange={handlegender} 
-          error={!!errors.gender} helperText={errors.gender}>Gender</InputLabel>
-          <Grid item xs={12}>
-          <Select
-            fullWidth labelId="gender-label"  value={gender} onChange={(event) => setGender(event.target.value)} label="Gender" >
-            <MenuItem value="male">Male</MenuItem>
-            <MenuItem value="female">Female</MenuItem>
-            <MenuItem value="other">Other</MenuItem>
-          </Select>
-          </Grid>
- 
+            <InputLabel id="gender-label">Gender</InputLabel>
+            <Select
+              fullWidth
+              labelId="gender-label"
+              value={gender}
+              onChange={handleGenderChange}
+              label="Gender"
+            >
+              <MenuItem value="male">Male</MenuItem>
+              <MenuItem value="female">Female</MenuItem>
+              <MenuItem value="other">Other</MenuItem>
+            </Select>
           </Grid>
 
           <Grid item xs={12}>
-            <Button fullWidth variant="contained" type="submit">
-             Set Password
-            
+            <Button fullWidth variant="contained" type="submit" disabled={isDisabled}>
+              Set Password
             </Button>
           </Grid>
         </Grid>
       </form>
       <Typography variant="body1" align="center">
-        Already have an account? <Link to="/login">Login</Link>
+        Already have an account? <Link to={ROUTES.login}>Login</Link>
       </Typography>
     </Container>
   );

@@ -4,7 +4,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import LoginForm from './components/LoginForm';
 import SetPassword from './components/SetPassword';
-import ForgotPassword from './components/ForgotPasswordPage';
+import Profile from './components/Profile';
+import ResetPasswordForm from './components/ResetPasswordForm';
 import CreateAccountPage from './components/CreateAccountPage';
 import './App.css';
 
@@ -20,7 +21,8 @@ function App() {
             <Route path="/" element={<LoginForm />} />
             <Route path="/register" element={<CreateAccountPage />} />
             <Route exact path="/setpassword" element={<SetPassword/>} />
-            <Route exact path="/forgotpassword" element={<ForgotPassword/>} />
+            <Route exact path="/ResetPasswordForm" element={<ResetPasswordForm/>} />
+            <Route exact path="/profile" element={<Profile/>} />
           </Routes>
         </Router>
       </ThemeProvider>

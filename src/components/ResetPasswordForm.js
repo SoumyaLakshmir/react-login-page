@@ -3,16 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { Container, Grid, Typography, TextField, Button } from '@mui/material';
 import { ERROR_MESSAGES, VALIDATION_RULES } from './constants';
 
-const SetPassword = () => {
-  const [username, setUsername] = useState('');
+const ResetPasswordForm = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [passwordMatch, setPasswordMatch] = useState(true);
   const navigate = useNavigate();
 
-  const handleUsernameChange = (event) => {
-    setUsername(event.target.value);
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
@@ -32,8 +32,10 @@ const SetPassword = () => {
   const validate = () => {
     let errors = {};
 
-    if (!username) {
-      errors.username = ERROR_MESSAGES.username;
+    if (!email) {
+      errors.email = ERROR_MESSAGES.email;
+    } else if (!VALIDATION_RULES.email.test(email)) {
+      errors.email = ERROR_MESSAGES.invalidEmail;
     }
 
     if (!password) {
@@ -55,7 +57,7 @@ const SetPassword = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (passwordMatch) {
-      localStorage.setItem(username, password);
+      localStorage.setItem(email, password);
       console.log("Registration successful!");
       handleClick();
     } else {
@@ -66,48 +68,32 @@ const SetPassword = () => {
     }
   };
 
-  const isFormValid = !!username && !!password && !!confirmPassword;
+  const isFormValid = !!email && !!password && !!confirmPassword;
 
   return (
     <Container maxWidth="sm">
       <Typography variant="h4" align="center" gutterBottom>
-        Set Password
+        ResetPassword
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <TextField
               fullWidth
-              label="Username"
-              value={username}
-              onChange={handleUsernameChange}
-              error={!!errors.username}
-              helperText={errors.username}
-            />
+              label="Email" value={email} onChange={handleEmailChange}
+              error={!!errors.email} helperText={errors.email}  />
           </Grid>
 
           <Grid item xs={12}>
             <TextField
-              fullWidth
-              label="Password"
-              type="password"
-              value={password}
-              onChange={handlePasswordChange}
-              error={!!errors.password}
-              helperText={errors.password}
-            />
+              fullWidth label="Password" type="password" value={password}onChange={handlePasswordChange}
+               error={!!errors.password} helperText={errors.password} />
           </Grid>
 
           <Grid item xs={12}>
             <TextField
-              fullWidth
-              label="Confirm password"
-              type="password"
-              value={confirmPassword}
-              onChange={handleConfirmPasswordChange}
-              error={!!errors.confirmPassword}
-              helperText={errors.confirmPassword}
-            />
+              fullWidth label="Confirm password" type="password" value={confirmPassword} onChange={handleConfirmPasswordChange}
+              error={!!errors.confirmPassword} helperText={errors.confirmPassword}/>
           </Grid>
 
           <Grid item xs={12}>
@@ -121,4 +107,4 @@ const SetPassword = () => {
   );
 };
 
-export default SetPassword;
+export default ResetPasswordForm;

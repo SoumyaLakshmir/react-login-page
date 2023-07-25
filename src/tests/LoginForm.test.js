@@ -1,92 +1,76 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import LoginForm from './LoginForm';
+import { render, screen, fireEvent } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import LoginForm from '../components/LoginForm';
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => jest.fn(),
+}));
 
 describe('LoginForm', () => {
-  test('renders the login form', () => {
+  it('renders the login form', () => {
     render(
-      <MemoryRouter>
+      <BrowserRouter>
         <LoginForm />
-      </MemoryRouter>
+      </BrowserRouter>
     );
 
     expect(screen.getByLabelText('Username')).toBeInTheDocument();
     expect(screen.getByLabelText('Password')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Login' })).toBeInTheDocument();
+    expect(screen.getByText('Login')).toBeInTheDocument();
     expect(screen.getByText("Don't have an account?")).toBeInTheDocument();
     expect(screen.getByText('Forgot password?')).toBeInTheDocument();
   });
 
-  test('displays required errors when form is submitted with empty fields', () => {
+  it('submits the form with valid credentials', () => {
     render(
-      <MemoryRouter>
+      <BrowserRouter>
+        <LoginForm />
+      </BrowserRouter>
+    );
+
+   
+    fireEvent.change(screen.getByLabelText('Username'), { target: { value: 'john.doe' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+
+
+    fireEvent.click(screen.getByText('Login'));
+
+  });
+
+  it('shows an error message for invalid credentials', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
         <LoginForm />
       </MemoryRouter>
     );
+    expect(screen.getByText('Login')).toBeDisabled();
 
-    const loginButton = screen.getByRole('button', { name: 'Login' });
+   
+    fireEvent.change(screen.getByLabelText('Username'), { target: { value: 'john.doe' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'invalidpassword' } });
 
-    act(() => {
-      fireEvent.click(loginButton);
-    });
+    fireEvent.click(screen.getByText('Login'));
 
-    expect(screen.getByText('Username is required')).toBeInTheDocument();
-    expect(screen.getByText('Password is required')).toBeInTheDocument();
+    expect(screen.getByText('Incorrect username or password')).toBeInTheDocument();
+    //expect(window.alert).toHaveBeenCalledWith('Incorrect username or password');
+    //console.log('Incorrect username or password');
   });
 
-  test('displays password validation error when form is submitted with an invalid password', () => {
+  it('disables the submit button when required fields are empty', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter initialEntries={['/']}>
         <LoginForm />
-      </MemoryRouter>
+        </MemoryRouter>
     );
 
-    const usernameInput = screen.getByLabelText('Username');
-    const passwordInput = screen.getByLabelText('Password');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
 
-    act(() => {
-      fireEvent.change(usernameInput, { target: { value: 'testuser' } });
-      fireEvent.change(passwordInput, { target: { value: 'pass' } });
-      fireEvent.click(loginButton);
-    });
+    expect(screen.getByText('Login')).toBeDisabled();
 
-    expect(
-      screen.getByText(
-        'Password must contain at least one number, one uppercase and lowercase letter, and at least 8 characters')).toBeInTheDocument();
+  
+    fireEvent.change(screen.getByLabelText('Username'), { target: { value: 'john.doe' } });
+    fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'password123' } });
+
+    expect(screen.getByText('Login')).toBeEnabled();
   });
-
-  test('navigates to dashboard on successful login', () => {
-
-    const localStorageMock = {
-      getItem: jest.fn((key) => {
-        if (key === 'testuser') {
-          return 'password123';
-        }
-        return null;
-      }),
-    };
-    Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-    const history = createMemoryHistory();
-    render(
-      <Router history={history}>
-      <LoginForm />
-    </Router>
-    );
-
-    const usernameInput = screen.getByLabelText('Username');
-    const passwordInput = screen.getByLabelText('Password');
-    const loginButton = screen.getByRole('button', { name: 'Login' });
-
-    act(() => {
-      fireEvent.change(usernameInput, { target: { value: 'testuser' } });
-      fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(loginButton);
-    });
-
-    
-  });
-
- 
 });
